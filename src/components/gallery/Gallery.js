@@ -58,6 +58,27 @@ const Gallery = () => {
       img.onerror = () => resolve(false);
     });
   };
+  // פונקציה להוציא את שם הקובץ בלי סיומת
+  const getFileNameWithoutExtension = (filePath) => {
+    return filePath.split('/').pop().replace(/\.[^/.]+$/, '');
+  };
+
+
+  const getLikesAndDislikes = (likes) => {
+    const likedImages = Object.keys(likes).filter(id => likes[id] === 'like');
+    const dislikedImages = Object.keys(likes).filter(id => likes[id] === 'dislike');
+    // console.log("likedImages:",likedImages, "dislikedImages:", dislikedImages);
+    setRandomImages(['/data/5813.jpg', "/data/329.jpg", "/data/7533.jpg", "/data/7633.jpg"]);
+    
+  
+    
+  };
+  
+  // useEffect(() => {
+  //   const updatedLikes = getLikesAndDislikes(likes);
+  // }, [likes]);
+  
+
 
   const handleLike = (id) => {
     handleImageSelection(id, 'like');
@@ -88,31 +109,39 @@ const Gallery = () => {
     });
 
     setLikes(prev => ({ ...prev, [id]: buttonType }));
-    loadRandomImages();
+    // הוצאת שם התמונה בלי סיומת ושליחתו לפונקציה
+    const fileName = getFileNameWithoutExtension(image.src);
+    getLikesAndDislikes(likes);
+    
+
+    // loadRandomImages();
   };
 
-  const loadRandomImages = async () => {
-    let randomImgs = [];
-    while (randomImgs.length < 4) {
-      const selectedNumbers = getRandomNumbers(4, TOTAL_IMAGES);
-      for (let num of selectedNumbers) {
-        const imgSrc = `${IMAGE_PATH}${num}.jpg`;
-        const isValid = await checkImageExists(imgSrc);
-        if (isValid && !randomImgs.includes(imgSrc)) {
-          randomImgs.push(imgSrc);
-        }
-      }
-    }
+  // const loadRandomImages = async () => {
+    // let randomImgs = [];
+    // while (randomImgs.length < 4) {
+    //   const selectedNumbers = getRandomNumbers(4, TOTAL_IMAGES);
+    //   for (let num of selectedNumbers) {
+    //     const imgSrc = `${IMAGE_PATH}${num}.jpg`;
+    //     const isValid = await checkImageExists(imgSrc);
+    //     if (isValid && !randomImgs.includes(imgSrc)) {
+    //       randomImgs.push(imgSrc);
+    //       console.log(imgSrc);
+          
+    //     }
+    //   }
+    // }
 
-    setRandomImages(randomImgs);
-  };
+    // setRandomImages(['/data/5813.jpg', "/data/329.jpg", "/data/7533.jpg", "/data/7633.jpg"]);
+  // };
 
   const handleRefresh = () => {
-    loadImages();
+    loadImages();    
   };
 
   const handleClearSelectedImages = () => {
     setSelectedImages([]); 
+    setLikes({});
   };
 
   useEffect(() => {

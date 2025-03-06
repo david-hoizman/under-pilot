@@ -2,7 +2,7 @@ import React from 'react';
 import './randomImages.css';
 
 const RandomImages = ({ randomImages }) => {
-  console.log(randomImages);
+  // console.log(randomImages);
 
   const imagesToShow = randomImages.slice(0, 4);
 
