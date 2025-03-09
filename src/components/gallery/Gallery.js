@@ -64,19 +64,65 @@ const Gallery = () => {
   };
 
 
-  const getLikesAndDislikes = (likes) => {
-    const likedImages = Object.keys(likes).filter(id => likes[id] === 'like');
-    const dislikedImages = Object.keys(likes).filter(id => likes[id] === 'dislike');
-    // console.log("likedImages:",likedImages, "dislikedImages:", dislikedImages);
-    setRandomImages(['/data/5813.jpg', "/data/329.jpg", "/data/7533.jpg", "/data/7633.jpg"]);
+  // const getLikesAndDislikes = (likes) => {
+  //   const likedImages = Object.keys(likes).filter(id => likes[id] === 'like');
+  //   const dislikedImages = Object.keys(likes).filter(id => likes[id] === 'dislike');
+  //   console.log(likedImages, dislikedImages);
+    
+  //   // console.log("likedImages:",likedImages, "dislikedImages:", dislikedImages);
+  //   setRandomImages(['/data/5813.jpg', "/data/329.jpg", "/data/7533.jpg", "/data/7633.jpg"]);
     
   
     
-  };
+  // };
   
-  // useEffect(() => {
-  //   const updatedLikes = getLikesAndDislikes(likes);
-  // }, [likes]);
+  useEffect(() => {
+    // מסננים את הלייקים והדיסלייקים מתוך המצב (likes)
+    const likedImages = Object.keys(likes).filter(id => likes[id] === 'like').map(Number);
+    const dislikedImages = Object.keys(likes).filter(id => likes[id] === 'dislike').map(Number);
+  
+    console.log("Liked images:", likedImages);
+    console.log("Disliked images:", dislikedImages);
+  
+    // מבנה הבקשה
+    const requestBody = {
+      likes: likedImages,
+      dislikes: dislikedImages,
+      superLikes: []  // כאן אתה יכול להוסיף תמונות שמסומנות כ-SuperLike אם יש
+    };
+  
+    // שליחת הבקשה לאנדפויינט
+    const sendLikesToEndpoint = async () => {
+      try {
+        const response = await fetch("http://0.0.0.0:8080/get_similar_arts?top_k=100000", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        console.log("Similar images:", data);
+  
+        // עדכון התמונות האקראיות לפי התגובה
+        setRandomImages(data.map(id => `/data/${id}.jpg`));
+      } catch (error) {
+        console.error("Error fetching similar images:", error);
+      }
+    };
+  
+    // שלח את הבקשה אם יש לייקים או דיסלייקים
+    if (likedImages.length > 0 || dislikedImages.length > 0) {
+      sendLikesToEndpoint();
+    }
+  
+  }, [likes]);  // יפעל כל פעם שסטייט ה-likes משתנה
+  
   
 
 
@@ -110,8 +156,8 @@ const Gallery = () => {
 
     setLikes(prev => ({ ...prev, [id]: buttonType }));
     // הוצאת שם התמונה בלי סיומת ושליחתו לפונקציה
-    const fileName = getFileNameWithoutExtension(image.src);
-    getLikesAndDislikes(likes);
+    // const fileName = getFileNameWithoutExtension(image.src);
+    // getLikesAndDislikes(likes);
     
 
     // loadRandomImages();
